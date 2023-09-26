@@ -1,12 +1,18 @@
-# fp-2023-cub-fall
+# HW01 
 
-This is a supplementory repository to the Advanced Functional Programming course taught in the [Constructor University Bremen](https://constructor.university/) by [@danyaberezun](https://github.com/danyaberezun) and [@kajigor](https://github.com/kajigor). 
+## Deadline: 26.09.2023, 23:59
 
-The syllabus of the course can be found [here](https://docs.google.com/document/d/11nIeQ4LNnz988R2goMwRJFJ2bVCzVCF8/edit?usp=sharing&ouid=106592839861472782542&rtpof=true&sd=true). 
-Please familiarize yourself with it, especially with the criteria for the completion of the course. 
+### Assigned by @danyaberezun
 
-The materials used in lectures, as well as homework assignments, will be published in a separate branch of this repository. 
-Unless stated otherwise, the deadline for a homework assignment is 23:59 of the day preceding the lecture following the homework assignment's publication. 
-To submit the homework assignment, please make a fork of this repository and open a pull-request to the corresponding branch. 
-Please tag the instructor who assigned the homework to ensure that your pull-request has been seen. 
-If your homework assignment has not been checked for a week after submission, please reach out to the instructor on telegram. 
+1. Select a functional language you want (or several) =)
+2. Implement RB-trees in both functional and imperative-like fashion.
+   1. implement function `fromOrdList :: List -> Tree` which converts the sorted list with no repeats to a RB-tree running in `O(n)`
+   2. Reduce the number of unnecessary checks in function `balance`
+      1. split `balance` onto two functions `lbalance` and `rbalance` (checks that left and right child ensures invariants); use them in `ins` function instead of `balance`
+      2. Rewrite `ins` in a way it never checks the colors of his grandchildren
+   3. Implement benchmarks that compare the actual execution times of these implementations
+3. Implement all 4 queues; Implement benchmarks that compare the actual execution times of these implementations
+
+[Slides from the lecture](lec1.pdf)
+
+[The recording of the lecture](https://www.youtube.com/watch?v=9TTcy4mkvn0&list=PLQsQ42jQ8PJEF8KmvQfSghy6oGXpXr5Am&index=1)
