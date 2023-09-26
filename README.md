@@ -5,9 +5,11 @@
 ### Assigned by @danyaberezun
 
 1 Dijkstra's algorithm via BT SBH
+
 2 Use Banker's method to implement "BankersDeque"
   * all operations should run in O_am(1)
-3 ∗ Lists supporting efficient catenation
+
+3 (optional) Lists supporting efficient catenation
   * all operations should run in O_am(1)
 
 [Slides from the lecture](lec2.pdf)
