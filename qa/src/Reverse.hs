@@ -6,6 +6,8 @@ reverseList :: [a] -> [a]
 reverseList [] = []
 reverseList (h : t) = reverseList t ++ [h]
 
+-- reverse (reverse xs) === xs
+
 -- Faster implementation of list reversal.
 -- It's less clear that it works correctly.
 fastReverseList :: [a] -> [a]

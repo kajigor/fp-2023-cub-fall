@@ -31,13 +31,6 @@ library
       Expr.Lexer
       Expr.Parser
       Expr.Prefix
-      IP.Gen.GenIP
-      IP.Gen.Main
-      IP.Lookup.IPTypes
-      IP.Lookup.LookupIP
-      IP.Lookup.Main
-      IP.Lookup.ParseIP
-      IP.Main
       ListGen
       Ranged
       Reverse
@@ -71,7 +64,6 @@ test-suite test
   main-is: Test.hs
   other-modules:
       Test.Expr
-      Test.IP.Props
       Test.RangedProp
       Test.Reverse
       Test.ReverseProp

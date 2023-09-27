@@ -7,8 +7,6 @@ import Test.Tasty
 import Test.Tasty.Hedgehog
 
 import Expr.Ast
-import qualified Expr.Infix as Infix
-import qualified Expr.Prefix as Prefix
 import qualified Expr.Parser as Parser
 
 -- Here, we test the parsers for arithmetic expressions.
@@ -44,15 +42,17 @@ genExpr n =
 -- parser . printer == id
 parserPrinterIsId :: MonadTest m => (Expr -> String) -> (String -> Maybe Expr) -> Expr -> m ()
 parserPrinterIsId printer parser ast =
-  undefined
+  tripping ast printer parser
 
 prop_printerParserInfix :: Property
-prop_printerParserInfix =
-  undefined
+prop_printerParserInfix = property $ do
+  expr <- forAll $ genExpr 10
+  parserPrinterIsId printInfix (Parser.parse Parser.Infix) expr
 
 prop_printerParserPrefix :: Property
-prop_printerParserPrefix =
-  undefined
+prop_printerParserPrefix = property $ do
+  expr <- forAll $ genExpr 100
+  parserPrinterIsId printPrefix (Parser.parse Parser.Prefix) expr
 
 props :: [TestTree]
 props =

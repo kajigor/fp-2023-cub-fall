@@ -8,7 +8,7 @@ import Control.Applicative
 -- Expr :: + Expr Expr
 --       | * Expr Expr
 --       | Number
--- +1*234 -> Just ("4", ...)
+-- +1*23 -> BinOp Plus (Num 1) (BinOp Mult (Num 2) (Num 3))
 parse :: String -> Maybe (String, Expr)
 parse = runParser (spaces *> parsePrefix)
 

@@ -9,8 +9,7 @@ import Data.List (sort)
 
 -- Integer number generators
 genInt :: Gen Int
-genInt =
-  Gen.int (Range.constant 0 100)
+genInt = Gen.int (Range.constant 0 10)
 
 -- Generator for lists of numbers with lengths in the specified range
 genList :: Int -> Int -> Gen [Int]
@@ -19,4 +18,7 @@ genList minLength maxLength =
 
 -- Generator for sorted lists of random lengths
 genSortedList :: Gen (SortedList Int)
-genSortedList = undefined
+genSortedList = do
+  minLength <- Gen.integral (Range.constant 1 100)
+  maxLength <- Gen.integral (Range.constant minLength 100)
+  Sorted . sort <$> genList minLength maxLength

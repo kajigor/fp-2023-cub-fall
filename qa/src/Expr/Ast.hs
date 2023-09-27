@@ -40,3 +40,4 @@ printPrefix (BinOp op l r) = printf "%s %s %s" (printOp op) (printPrefix l) (pri
 printPrefix (Number n) = show n
 
 -- parser (printer expr) == expr
+
