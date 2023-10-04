@@ -25,6 +25,8 @@ source-repository head
 
 library
   exposed-modules:
+      Expr
+      FixedUnits
       UnitsOfMeasure
   other-modules:
       Paths_gadt
