@@ -1,9 +1,9 @@
-{-# LANGUAGE GeneralizedNewtypeDeriving, FlexibleContexts, FlexibleInstances, MultiParamTypeClasses #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving, TypeApplications, ScopedTypeVariables, FlexibleContexts, FlexibleInstances, MultiParamTypeClasses, AllowAmbiguousTypes #-}
 
 module UnitsOfMeasure where
 
 newtype Distance unit = Distance Double
-  deriving (Num, Fractional, Show)
+  deriving (Num, Fractional)
 
 data M
 data Ft
@@ -28,3 +28,18 @@ instance Convert (Distance Ft) (Distance M) where
 
 instance Convert a a where
   convert = id
+
+-- marathonInMeters === marathonInFeet
+--- === -- checks for equality given that the values' units can be converted to each other
+
+class UnitName unit where
+  unitName :: String
+
+instance UnitName M where
+  unitName = "m"
+
+instance UnitName Ft where
+  unitName = "ft"
+
+instance UnitName unit => Show (Distance unit) where
+  show (Distance d) = show d ++ unitName @unit
