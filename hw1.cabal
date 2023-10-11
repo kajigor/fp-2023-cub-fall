@@ -25,9 +25,14 @@ source-repository head
 
 library
   exposed-modules:
+      BankersQueue
       FunctionalRBTree
       ImperativeRBTree
+      NaiveQueue
+      PhysicistsQueue
+      Queue
       RBTreeCommon
+      RealTimeQueue
       Tree
   other-modules:
       Paths_hw1
