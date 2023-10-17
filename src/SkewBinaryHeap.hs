@@ -37,7 +37,7 @@ instance Ord a => Heap (SkewBinaryHeap a) a where
     popMin :: SkewBinaryHeap a -> (a, SkewBinaryHeap a)
     popMin ts = do
         let (t, ts') = getMinTree ts
-        let heap = foldl (flip insert) (merge (reverse $ nodes t) ts') (singletonNodes t)
+        let heap = foldr insert (merge (reverse $ nodes t) ts') (singletonNodes t)
         (value t, heap)
 
         where

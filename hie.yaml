@@ -1,0 +1,10 @@
+cradle:
+  stack:
+    - path: "./src"
+      component: "hw02:lib"
+
+    - path: "./app/Main.hs"
+      component: "hw02:exe:hw02-exe"
+
+    - path: "./test"
+      component: "hw02:test:hw02-test"

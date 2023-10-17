@@ -35,6 +35,8 @@ ghc-options:
 
 library:
   source-dirs: src
+  dependencies:
+  - hedgehog
 
 executables:
   hw02-exe:
@@ -57,3 +59,8 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - hw02
+    - hedgehog
+    - tasty
+    - tasty-hedgehog
+    - tasty-hspec
+    - tasty-hunit

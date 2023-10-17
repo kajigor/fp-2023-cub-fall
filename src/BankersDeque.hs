@@ -7,7 +7,7 @@ data BankersDeque a = BankersDeque {
     frontLength :: Int,
     rear :: [a],
     rearLength :: Int
-}
+} deriving (Eq, Show)
 
 cons :: a -> BankersDeque a -> BankersDeque a
 cons x deque@(BankersDeque { front, frontLength }) = 

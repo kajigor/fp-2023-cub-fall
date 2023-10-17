@@ -36,15 +36,15 @@ update i y ((w, t) : ts)
     | otherwise = (w, t) : update (i - w) y ts
 
 toList :: RAList a -> [a]
-toList = reverse . foldl appendTreeToList [] . map snd
+toList = foldr (appendTreeToList . snd) []
     where
-        appendTreeToList :: [a] -> Tree a -> [a]
-        appendTreeToList list (Leaf x) = x : list
-        appendTreeToList list (Node x t1 t2) =
-            appendTreeToList (appendTreeToList (x : list) t1) t2
+        appendTreeToList :: Tree a -> [a] -> [a]
+        appendTreeToList (Leaf x) list = x : list
+        appendTreeToList (Node x t1 t2) list =
+            x : appendTreeToList t1 (appendTreeToList t2 list)
 
 fromList :: [a] -> RAList a
-fromList = foldl (flip cons) emptyRAList . reverse
+fromList = foldr cons emptyRAList
 
 lookupTree :: Int -> Int -> Tree a -> a
 lookupTree 0 1 (Leaf x) = x

@@ -1,4 +1,4 @@
-module Dijkstra (dijkstra, Edge(Edge), Vertex, Graph) where
+module Dijkstra (dijkstra, Edge(Edge), Vertex, Graph, Distance(Distance, Inf)) where
 import RandomAccessList
 import BootstrappedHeap
 import Prelude hiding (lookup)
