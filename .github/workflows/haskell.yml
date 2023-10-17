@@ -39,4 +39,4 @@ jobs:
     - name: Build
       run: cabal build --enable-tests --enable-benchmarks all
     - name: Run tests
-      run: cabal run hw1-test
+      run: cabal run hw02-test
