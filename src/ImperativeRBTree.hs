@@ -12,6 +12,7 @@ instance Ord a => Tree (ImperativeRBTree a) a where
     remove x (ImperativeRBTree tree) = ImperativeRBTree $ removeImpl balanceImperative x tree
     member x (ImperativeRBTree tree) = memberImpl x tree
     fromOrdList = ImperativeRBTree . fromOrdListImpl
+    toOrdList (ImperativeRBTree tree) = toOrdListImpl tree
 
 instance Show a => Show (ImperativeRBTree a) where
    show (ImperativeRBTree tree) = show tree
@@ -23,6 +24,7 @@ instance Ord a => Tree (ImperativeDividedRBTree a) a where
     remove x (ImperativeDividedRBTree tree) = ImperativeDividedRBTree $ removeImpl balanceImperative x tree
     member x (ImperativeDividedRBTree tree) = memberImpl x tree
     fromOrdList = ImperativeDividedRBTree . fromOrdListImpl
+    toOrdList (ImperativeDividedRBTree tree) = toOrdListImpl tree
 
 instance Show a => Show (ImperativeDividedRBTree a) where
    show (ImperativeDividedRBTree tree) = show tree

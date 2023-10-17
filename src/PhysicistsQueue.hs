@@ -12,17 +12,21 @@ instance Queue (PhysicistsQueue a) a where
 
     enqueue x (PhysicistsQueue w f fLength r rLength) = checkInvariants $ PhysicistsQueue w f fLength (x : r) (rLength + 1)
 
-    head (PhysicistsQueue (x : xs) _ _ _ _) = x
+    head (PhysicistsQueue (x : _) _ _ _ _) = x
     
-    tail (PhysicistsQueue (_ : xs) f fLength r rLength) = checkInvariants $ PhysicistsQueue xs f (fLength - 1) r rLength
+    tail (PhysicistsQueue (_ : xs) (_ : fs) fLength r rLength) = checkInvariants $ PhysicistsQueue xs fs (fLength - 1) r rLength
 
+emptyPhysicistsQueue :: PhysicistsQueue a
 emptyPhysicistsQueue = PhysicistsQueue [] [] 0 [] 0
 
+checkInvariants :: PhysicistsQueue a -> PhysicistsQueue a
 checkInvariants q = checkW $ checkR q
 
+checkW :: PhysicistsQueue a -> PhysicistsQueue a
 checkW (PhysicistsQueue [] f fLength r rLength) = PhysicistsQueue f f fLength r rLength
 checkW q = q
 
-checkR queue@(PhysicistsQueue w f fLength r rLength)
+checkR :: PhysicistsQueue a -> PhysicistsQueue a
+checkR queue@(PhysicistsQueue _ f fLength r rLength)
     | fLength >= rLength = queue
     | otherwise = PhysicistsQueue f (f ++ reverse r) (fLength + rLength) [] 0

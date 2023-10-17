@@ -11,6 +11,7 @@ instance Ord a => Tree (FunctionalRBTree a) a where
     remove x (FunctionalRBTree tree) = FunctionalRBTree $ removeImpl balance x tree
     member x (FunctionalRBTree tree) = memberImpl x tree
     fromOrdList = FunctionalRBTree . fromOrdListImpl
+    toOrdList (FunctionalRBTree tree) = toOrdListImpl tree
 
 instance Show a => Show (FunctionalRBTree a) where
    show (FunctionalRBTree tree) = show tree
@@ -23,6 +24,7 @@ instance Ord a => Tree (FunctionalDividedRBTree a) a where
     remove x (FunctionalDividedRBTree tree) = FunctionalDividedRBTree $ removeImpl balance x tree
     member x (FunctionalDividedRBTree tree) = memberImpl x tree
     fromOrdList = FunctionalDividedRBTree . fromOrdListImpl
+    toOrdList (FunctionalDividedRBTree tree) = toOrdListImpl tree
 
 instance Show a => Show (FunctionalDividedRBTree a) where
    show (FunctionalDividedRBTree tree) = show tree
