@@ -1,0 +1,269 @@
+\documentclass[9pt]{article}
+\usepackage{amssymb,amsmath,cancel,cite,cmap,float,graphicx,
+  lmodern,listings,lstautogobble,
+  mathtools,multirow,pifont,pgfplots,proof,tasks,txfonts,tikz,tikz-qtree,
+  makecell,wrapfig,xcolor,yfonts}
+\graphicspath{{figures/}}
+\usetikzlibrary{arrows,automata,positioning,shapes,shapes.multipart,shapes.geometric,snakes,fit,calc,tikzmark}
+\tikzstyle{decision} = [ diamond, aspect=2, draw, fill=blue!20, text width=5em,
+text badly centered, node distance=2cm, inner sep=0pt ]
+\tikzstyle{block} = [ rectangle, draw, text width=5em, text centered,
+rounded corners, minimum height=1em ]
+\tikzstyle{line} = [ draw, -latex' ]
+
+\begin{document}
+
+\textbf{Deadline: 31.10.2023 23:59:59}
+
+\begin{itemize}
+    \item Recommended book: Types and Programming Languages by B. C. Pierce;
+          chapters 5 (untyped lambda calculus) and 9 (simply typed lambda calculus).
+    \item Great paper on Reduction Strategies: Demonstrating Lambda Calculus Reduction by P.Sestoft
+\end{itemize}
+
+\section{Simply typed lambda calculus (STLC, $\lambda_{\to}$)}
+\subsection{Syntax (Pure Calculus extended with Base Types $\alpha_i$)}
+\begin{align*}
+    M,N          & \Coloneqq\ x\ |\ \lambda x {\color{red} : \tau} . N\ |\ M N & \textnormal{terms}        \\
+    \tau, \sigma & \Coloneqq\ \alpha_{i}\ |\ \tau \to \sigma                   & \textnormal{simple types}
+\end{align*}
+
+\subsection{Typing Rules}
+
+{
+    $\infer[\mathrm{Var/Ax}]{\Gamma \vdash x:\tau}{\Gamma (x) = \tau}$
+    \hspace{1.5cm}
+    $\infer[\mathrm{Abs/\to I}]{\Gamma \vdash \lambda x {\color{red}: \tau} . M : \tau \to \sigma}
+        {\Gamma, x :\tau \vdash M : \sigma }$
+    \hspace{1cm}
+    $\infer[\mathrm{App/\to E}]{\Gamma \vdash M N :\sigma}{\Gamma \vdash N : \tau \;\;\;
+            \Gamma \vdash M : \tau \to \sigma}$
+}
+
+\subsection{Reduction (Evaluation) Rules}
+
+$\infer[EApp_1]{M\ N \longrightarrow M'\ N}{M \longrightarrow M'}$
+\hspace{1cm}
+$\infer[EApp_2]{v\ N \longrightarrow v\ N'}{N \longrightarrow N'}$
+\hspace{1cm}
+$\infer[EBeta]{(\lambda x : \tau . M)\ v \longrightarrow M[x/v]}{}$
+
+Note:
+\begin{enumerate}
+    \item substitution always assumed to be capture-avoiding;
+    \item $v$ is a value ($\lambda x : \tau. M$);
+    \item corresponds to call-by-value.
+\end{enumerate}
+
+\subsection{Examples}
+
+\begin{tabular}{l|l}
+    \`a la Curry                                                                                             & \`a la Church                                                                                                                                              \\
+    \hline
+    $\lambda x . x\ :\ \alpha \to \alpha\quad\quad\lambda x . x\ :\ (\alpha \to \beta) \to \alpha \to \beta$ & $\lambda x^{\color{blue}\alpha} . x\ :\ \alpha \to \alpha\quad\quad\lambda x^{\color{blue}\alpha \to \beta} . x\ :\ (\alpha \to \beta)\to\alpha \to \beta$ \\
+    $\lambda x y. x\ :\ \alpha \to \beta \to \alpha$                                                         & $\lambda x^{\color{blue}\alpha} y^{\color{blue}\beta}. x\ :\ \alpha \to \beta \to \alpha$
+\end{tabular}
+
+\[
+    \infer[\to I]{\vdash\lambda\ f^{\color{blue}(\beta \to \gamma)}g^{\color{blue}(\alpha \to \beta)}x^{\color{blue}\alpha}.\ f\ (g\ x)\ :\ (\beta \to \gamma)\to (\alpha \to \beta) \to \alpha \to \gamma\tikzmark{bb}}{
+    \infer[\to I]{f:\beta\to\gamma \vdash \lambda\ g^{\color{blue}(\alpha \to \beta)}x^{\color{blue}\alpha}.\ f\ (g\ x)\ :\ (\alpha \to \beta) \to \alpha \to \gamma}{
+    \infer[\to I]{f:\beta\to\gamma,\ g:\alpha\to\beta \vdash \lambda\ x^{\color{blue}\alpha}.\ f\ (g\ x)\ :\ \alpha \to \gamma}{
+        \infer[\to E]{f:\beta\to\gamma,\ g:\alpha\to\beta,\ x : \alpha \vdash f\ (g\ x)\ :\ \gamma}{
+            \infer[Ax]{f:\beta\to\gamma,\ g:\alpha\to\beta,\ x : \alpha \vdash f \ :\ \beta\to\gamma}{}
+            & \infer[\to E]{ f:\beta\to\gamma,\ g:\alpha\to\beta,\ x : \alpha \vdash g\ x \ :\ \beta}{
+                \infer[Ax]{\cdots, g:\alpha\to\beta, \dots \vdash g \ :\ \alpha \to \beta}{}
+                & \infer[Ax]{\cdots,\ x : \alpha \vdash x \ :\ \beta}{}}}}}}
+\]
+
+\[
+    \infer[\text{App}]{\vdash (\lambda x : Bool.x)\ true\ :\ Bool}{
+        \infer[\text{Abs}]{\vdash \lambda x : Bool . x\ :\ Bool \to Bool}{
+            \infer[\text{Var}]{x:Bool \vdash x : Bool}{
+                x: Bool\ \in\ \{x:Bool\}
+            }
+        }
+        \quad
+        \infer[\text{T-True}]{\vdash true\ :\ Bool}{}
+    }
+\]
+
+\subsection{Example: STLC extended with Let-bindings}
+
+\begin{align*}
+    M,N          & \Coloneqq\ x\ |\ \lambda x . N\ |\ M N\ |\ {\color{blue}\text{let } x = N \text{ in } M} & \textnormal{terms} \\
+    \tau, \sigma & \Coloneqq\ \alpha_{i}\ |\ \tau \to \sigma                                                & \textnormal{types} \\
+    v            & \Coloneqq\ \lambda x . M                                                                 & \textnormal{value}
+\end{align*}
+
+new typing rule:
+
+$\infer[let]{\Gamma \vdash \text{let } x = N \text{ in } M\ :\ \tau_2}{\Gamma \vdash N : \tau_1 \quad \Gamma, x:\tau_1\vdash M : \tau_2 }$
+
+new evaluation rules:
+
+$\text{let } x = v \text{ in } M \longrightarrow M[x/v] \quad LetV$
+\hspace{1cm}
+$\infer[Let]{\text{let } x = N \text{ in } M \longrightarrow \text{let } x = N' \text{ in } M}{N \longrightarrow N'}$
+
+
+\subsection{Int$_{\to}$ (Implicative part of Propositional Intuitionistic Logic)}
+
+$\infer[Ax]{\Gamma, \alpha \vdash \alpha}{}$ \hspace{0.5cm}
+$\infer[\tikzmark{MP}\to E]{\Gamma \vdash \beta}{\Gamma \vdash \alpha \to \beta & \Gamma \vdash \alpha}$ \hspace{2.8cm}
+$\infer[\tikzmark{DT}\to I]{\Gamma \vdash \alpha \to \beta}{\Gamma, \alpha \vdash \beta}$
+\begin{tikzpicture}[remember picture,overlay]
+    \node (A) at ([shift={(2,0.3)}]$(pic cs:MP)$ ) {\color{blue}Modus ponens};
+    % \draw[thick,->] (A) -- ([shift={(0,0.3)}]$(pic cs:a)$ ) ;
+    \draw [->,blue] (A.west) to [out=180,in=45] ([shift={(0,0.3)}]$(pic cs:MP)$.north );
+    \node (B) at ([shift={(2.5,0.2)}]$(pic cs:DT)$ ) {\makecell{\color{violet}Hilbert's Deduction\\ \color{violet}Theorem}};
+    % \draw[thick,->] (B) -- ([shift={(0.3,0.3)}]$(pic cs:b)$ ) ;
+    \draw [->,violet] (B.west) to [out=180,in=45] ([shift={(0.3,0.3)}]$(pic cs:DT)$.north );
+\end{tikzpicture}
+
+Example:
+\[
+    \infer[\to I]{\vdash(\beta \to \gamma)\to (\alpha \to \beta) \to \alpha \to \gamma\tikzmark{bb}}{
+        \infer[\to I]{\beta\to\gamma \vdash (\alpha \to \beta) \to \alpha \to \gamma}{
+            \infer[\to I]{\beta\to\gamma,\ \alpha\to\beta \vdash \alpha \to \gamma}{
+                \infer[\to E]{\Gamma\equiv \beta\to\gamma,\ \alpha\to\beta,\ \alpha \vdash \gamma}{
+                    \infer[Ax]{\Gamma \vdash \beta\to\gamma}{}
+                    & \infer[\to E]{ \Gamma \vdash \beta}{
+                        \infer[Ax]{\Gamma \vdash \alpha \to \beta}{}
+                        & \infer[Ax]{\Gamma \vdash \beta}{}}}}}}
+\]
+
+\subsection{Encodings}
+
+\paragraph*{Booleans}$ $
+
+$T = true = \lambda t . \lambda f .\ t$
+
+$F = false = \lambda t . \lambda f .\ f$
+
+$test = \lambda l . \lambda m . \lambda n .\ l\ m\ n$ ($\sim$ if then else)
+
+$and = \lambda l . \lambda m . \lambda n .\ l\ m\ n$
+
+
+\paragraph*{Pairs}$ $
+
+$pair = \lambda f . \lambda s . \lambda b.\ b\ f\ s$
+
+$fst = \lambda p .\ p\ T$
+
+$snd = \lambda p .\ p\ F$
+
+\paragraph*{Church Numerals}$ $
+
+$c_0 = \lambda s.\lambda z.\ z$
+
+$c_1 = \lambda s.\lambda z.\ s\ z$
+
+$c_i = \lambda s.\lambda z.\ s^{i}\ z$
+
+$succ = \lambda n . \lambda s . \lambda z.\ s\ (n\ s\ z)$
+
+$plus = \lambda m .\lambda n . \lambda s . \lambda z.\ m\ s\ (n\ s\ z)$
+
+$times = \lambda m .\lambda n . \lambda s . \lambda z.\ m\ (n\ s)\ z$
+
+$iszero = \lambda m .\ m\ (\lambda x.\ F)\ T$
+
+$pred = \lambda n. \lambda s. \lambda z.\ n\ (\lambda f. \lambda h.\ f\ (g\ f))\ (\lambda u. z)\ (\lambda v. v)$
+
+$subt = \lambda m .\lambda n .\ n\ pred\ m$
+
+\section{Recursion}
+
+Recursion in untyped lambda calculus can be expressed with so-called fix-point combinators.
+
+\noindent\textbf{Theorem}.
+Forall term $F$ there exists term $V$ such that $V =_{\beta} F\ V$.\\
+\textbf{Proof}: $V=(\lambda x.\ F\ (x\ x))(\lambda x.\ F\ (x\ ))$ Qed.
+
+\noindent\textbf{Theorem}.
+$\exists \mathbb{Y}:\ \forall F.\ \mathbb{Y}\ F\ \to_{\beta} F\ (\mathbb{Y}\ F)$.\\
+\textbf{Proofs}: \\
+\begin{enumerate}
+    \item $\mathbb{Y} = \lambda f.\ (\lambda x.\ f\ (x\ x))\ (\lambda x.\ f\ (x\ x))$
+    \item $A = \lambda x. \lambda y.\ y\ (x\ x\ y)$; $\Theta = A\ A$
+    \item $\dots$
+\end{enumerate}
+Qed.
+
+\noindent\textbf{Theorem (First Recursion Theorem)}.
+$\forall M. \exists F:\ F =_{\beta} M[f/F]$.\\
+\textbf{Proofs}: $F = \mathbb{Y}\ (\lambda f. M)$ Qed.
+
+Note, in $\lambda_{\to}$ recursion is impossible.
+One can extend $\lambda_{\to}$ with explicit fixed-point combinator by defining corresponding new term expression, typing and evaluation rules.
+The correct form of fixed-point combinator depends on evaluation strategy,
+for example $\mathbb{Y}$ is standard combinator for call-by-name, while
+$\Theta$ is standard call-by-value fixed-point combinator.
+
+\noindent\textbf{Example:} factorial function $fact$ on church numerals\\
+$f = \lambda f. \lambda n.\ \text{ if } iszero\ n \text{ then } c_1 \text{ else } times\ n\ (f\ (pred\ n))$\\
+$fact = fix\ g$\\
+where $fix$ is the corresponding fixed-point combinator.
+
+\subsection{{\color{violet}Exercises}}
+\begin{enumerate}
+    \item Prove that the following statements are derivable in STLC (provide type derivation)
+          \begin{enumerate}
+              \item $f:Bool \to Bool \vdash f\ (if\ false\ then\ true\ else\ false)\ :\ Bool$
+              \item $f:Bool \to Bool \vdash \lambda x:Bool.\ f\ (if\ x\ then\ false\ else\ x)\ :\ Bool \to Bool$
+          \end{enumerate}
+          assuming
+          \[
+              \infer[\text{T-If}]{\Gamma \vdash if\ e\ then\ v\ else\ u\ :\ \tau}{
+                  \Gamma \vdash e\ :\ Bool
+                  \quad
+                  \Gamma \vdash v\ :\ \tau
+                  \quad
+                  \Gamma \vdash u\ :\ \tau
+              }
+          \]
+    \item Find all inhabitants (closed terms) of the following types (both in \`a la Curch
+          and \`a la Curry):
+          \begin{enumerate}
+              \item $(\alpha\to\beta)\to(\beta\to\gamma)\to\alpha\to\gamma$
+              \item $\alpha \to \beta \to (\alpha\to\beta\to\gamma)\to\gamma$
+              \item $((\alpha\to\beta\to\alpha)\to\alpha)\to\alpha$
+              \item $\beta\to((\alpha\to\beta)\to\gamma)\to\gamma$
+              \item $\alpha \to (\alpha \to \alpha)\to \alpha$
+          \end{enumerate}
+    \item Compute the most general (principal) type of the following terms
+          \begin{enumerate}
+              \item $S = \lambda x\ y\ z.\ x\ z\ (y\ z)$
+              \item $K = \lambda x\ y.\ x$
+              \item $SKK$
+              \item $I = \lambda x.\ x$
+          \end{enumerate}
+    \item  Construct a derivation of type $((\alpha\to\beta)\to\gamma)\to\beta\to\gamma$ and the associated typed $\lambda$-term
+    \item Add product types to $\lambda_{\to}$, that is add $\sigma \times \tau$ to the types and
+          \begin{enumerate}
+              \item Add the appropriate term constructor and projections
+              \item Define typing rules
+              \item Define reduction rules for the new term constructors
+              \item Define (bii)map function for pairs and provide derivation for it
+          \end{enumerate}
+    \item Besides $\beta$-equivalence there exists another form of equivalence on lambda terms called $\eta$-equivalence or $\eta$-coercion (denoted $=_{\eta}$; $\eta$-expansion $\to_{\eta}$ and $\eta$-reduction $\leftarrow_{\eta}$).
+          It is defined by $M =_{\eta} \lambda x.\ M\ x$.
+          Note, it can't be expressed via $\beta$-reductions.
+          Also, note that in untyped calculus a term can be $\eta$-expanded an arbitrary number of times,
+          while in simply typed lambda calculus $\eta$-expansion is obviously limited by the term's type.
+          Term of $\lambda_{\to}$ is said to be in $\eta$-long form if it is fully $\eta$-expanded;
+          formally, it can be defined with the following grammar where $m \in \mathbb{N}$, $n,p\in\mathbb{N}_{0}$:
+          \[
+              \begin{array}{ll}
+                  \Lambda^{lf}_{\text{odd}} & \Coloneqq \lambda x:\tau_1 \dots x:\tau_p.\ \Lambda^{lf}_{\text{even}}                                                                                                                                   \\
+                  \Lambda^{lf}_{\text{odd}} & \Coloneqq x\ {\Lambda_1}^{lf}_{\text{odd}}\ \dots\ {\Lambda_n}^{lf}_{\text{odd}}\ |\ {\Lambda_0}^{lf}_{\text{odd}}\ @_{\text{long}}\ {\Lambda_1}^{lf}_{\text{odd}}\ \dots\ {\Lambda_m}^{lf}_{\text{odd}}
+              \end{array}
+          \]
+          In other words, being viewed as a tree, all odd level nodes are abstractions over an arbitrary number of variables,
+          while even level nodes are applications.
+          Find the $\eta$-long form of the following term:
+          $$test\ (mult\ c_3\ c_2)\ (snd\ (pair\ (and\ T\ F)\ c_1))$$
+    \item Provide step-by-step evaluation of term $fact\ c_3$ with both call-by-name and call-by-value reduction strategies.
+\end{enumerate}
+\end{document}
