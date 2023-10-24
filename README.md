@@ -1,6 +1,6 @@
 # HW05
 
-## Deadline: 24.10.2023, 23:59
+## Deadline: 31.10.2023, 23:59
 
 ### Assigned by @danyaberezun
 
