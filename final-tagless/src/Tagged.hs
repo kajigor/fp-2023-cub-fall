@@ -4,6 +4,9 @@ import Common
 import Control.Monad.State
 import Debug.Trace
 
+data Tag = IntTag Int
+         | LambdaTad (Tag -> Tag)
+
 data Dsl
   = IntConst Int
 
@@ -20,7 +23,28 @@ eval :: Dsl -> Dsl
 eval term = evalState (eval' term) (DslState [])
 
 eval' :: Dsl -> State DslState Dsl
-eval' term = undefined
+eval' (IntConst n) = return $ IntConst n
+eval' (Bin (BinOp _ f) x y) = do
+  x <- eval' x
+  y <- eval' y
+  case (x, y) of
+    (IntConst x', IntConst y') -> return $ IntConst $ x' `f` y'
+    _ -> error "Cannot apply binOp to non-integer values"
+eval' (Var v) = do
+  state <- get
+  return $ case lookup v (getState state) of
+    Just x -> x
+    Nothing -> Var v
+eval' (App body arg) = do
+  body <- eval' body
+  arg <- eval' arg
+  case body of
+    Lam v e -> do
+      state <- get
+      put $ DslState { getState = (v, arg) : getState state }
+      eval' e
+    t -> return $ App t arg
+eval' (Lam v e) = Lam v <$> eval' e
 
 term = App (Lam "x" (Bin (BinOp "+" (+)) (Var "x") (Var "x"))) (IntConst 42)
 

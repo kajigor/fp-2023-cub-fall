@@ -40,3 +40,6 @@ frst = Lam "p" $ App (Var "p") tru
 tru = Lam "t" $ Lam "_f" $ Var "t"
 
 fstOfPair = App frst (App (App pair (Var "u")) (Var "w"))
+
+-- (\xy.x)y
+boom = App (Lam "x" (Lam "y" $ Var "x")) (Var "y")

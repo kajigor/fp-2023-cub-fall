@@ -20,7 +20,22 @@ eval :: Dsl -> Int
 eval term = evalState (eval' term) (DslState [])
 
 eval' :: Dsl -> State DslState Int
-eval' = undefined
+eval' (IntConst n) = return n
+eval' (Bin (BinOp _ f) x y) = do
+  x <- eval' x
+  y <- eval' y
+  return $ x `f` y
+eval' (Var v) = do
+  state <- get
+  case lookup v (getState state) of
+    Just x -> return x
+    Nothing -> error "No such var in scope"
+eval' term@(App (Lam v e) arg) = do
+  arg <- eval' arg
+  state <- get
+  put $ DslState { getState = (v, arg) : getState state }
+  eval' e
+eval' t = error $ show t
 
 term = App (Lam "x" (Bin (BinOp "+" (+)) (Var "x") (Var "x"))) (IntConst 42)
 
