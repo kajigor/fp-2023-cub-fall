@@ -57,8 +57,17 @@ elseKW = kw "Else" <?> "Else"
 boolKW :: Parser Text
 boolKW = kw "Bool" <?> "Bool"
 
+letKW :: Parser Text
+letKW = kw "Let" <?> "Let"
+
+inKW :: Parser Text 
+inKW = kw "In" <?> "In"
+
 lambda :: Parser Text
 lambda = symbol "λ" <|> symbol "\\" <?> "lambda symbol"
+
+eqs :: Parser Text
+eqs = symbol "=" <?> "equals symbol"
 
 ident :: Parser String
 ident = lexeme ((:) <$> lowerChar <*> many alphaNumChar <?> "variable")
@@ -73,6 +82,7 @@ pLambdaTerm = choice
   , pApplication
   , pBoolLit
   , pIf
+  , pLet
   ]
   <?> "lambda term"
 
@@ -100,6 +110,10 @@ pIf =
   If <$> (ifKW *> pLambdaTerm) <*> (thenKW *> pLambdaTerm) <*> (elseKW *> pLambdaTerm)
   <?> "if expression"
 
+pLet :: Parser (Term String)
+pLet =
+  Let <$> (letKW *> ident) <*> (eqs *> pLambdaTerm) <*> (inKW *> pLambdaTerm)
+  <?> "let expression"
 
 pType :: Parser Type
 pType =

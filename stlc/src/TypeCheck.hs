@@ -11,7 +11,7 @@ typeCheckEmpty :: Term String -> Either Error Type
 typeCheckEmpty = typeCheck M.empty
 
 labelGuard :: Bool -> e -> Either e ()
-labelGuard True e  = return ()
+labelGuard True _  = return ()
 labelGuard False e = Left e
 
 typeCheck :: Env -> Term String -> Either Error Type
@@ -39,3 +39,7 @@ typeCheck env (If c t e) = do
   et <- typeCheck env e
   labelGuard (tt == et) $ concat ["Expected branches to match, got ", show t, " : ", show tt, " and ", show e, " : ", show et]
   return tt
+typeCheck env (Let x v t) = do
+  vt <- typeCheck env v
+  let env' = M.insert x vt env
+  typeCheck env' t

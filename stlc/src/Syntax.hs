@@ -26,6 +26,7 @@ data Term a
   | App (Term a) (Term a)
   | BoolLit Bool
   | If (Term a) (Term a) (Term a)
+  | Let a (Term a) (Term a)
   deriving (Eq)
 
 instance Show (Term String) where
@@ -34,6 +35,7 @@ instance Show (Term String) where
   show (App t1 t2) = printf "(%s) (%s)" (show t1) (show t2)
   show (BoolLit b) = printf "%s" (show b)
   show (If c t e) = printf "if %s then %s else %s" (show c) (show t) (show e)
+  show (Let x v t) = printf "let %s = %s in %s" x (show v) (show t)
 
 freeVars :: Ord a => Term a -> S.Set a
 freeVars (Var a) = S.singleton a
@@ -41,3 +43,4 @@ freeVars (Abs a _ t) = S.delete a (freeVars t)
 freeVars (App t1 t2) = S.union (freeVars t1) (freeVars t2)
 freeVars (BoolLit _) = S.empty
 freeVars (If c t e) = S.unions (freeVars <$> [c, t, e])
+freeVars (Let x v t) = S.union (freeVars v) (S.delete x (freeVars t))
