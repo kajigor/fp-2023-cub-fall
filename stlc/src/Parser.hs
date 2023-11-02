@@ -13,6 +13,9 @@ import Control.Monad.Combinators.Expr
 
 import Syntax
 
+-- parser :: "...." -> AST
+-- parser combinators ::  "prefix .. postfix" -> (AST, " postfix" )
+
 type Parser = Parsec Void Text
 
 sc :: Parser ()
@@ -57,6 +60,8 @@ elseKW = kw "Else" <?> "Else"
 boolKW :: Parser Text
 boolKW = kw "Bool" <?> "Bool"
 
+-- abstraction :: λ x : T . b
+
 lambda :: Parser Text
 lambda = symbol "λ" <|> symbol "\\" <?> "lambda symbol"
 
@@ -99,7 +104,6 @@ pIf :: Parser (Term String)
 pIf =
   If <$> (ifKW *> pLambdaTerm) <*> (thenKW *> pLambdaTerm) <*> (elseKW *> pLambdaTerm)
   <?> "if expression"
-
 
 pType :: Parser Type
 pType =

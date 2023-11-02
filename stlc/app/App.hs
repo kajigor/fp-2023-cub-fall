@@ -1,5 +1,6 @@
 module App where
 
+-- optparse-applicative
 import Options.Applicative
 import Parser (parseLambdaTerm)
 import TypeCheck
