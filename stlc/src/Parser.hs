@@ -13,6 +13,9 @@ import Control.Monad.Combinators.Expr
 
 import Syntax
 
+-- parser :: "...." -> AST
+-- parser combinators ::  "prefix .. postfix" -> (AST, " postfix" )
+
 type Parser = Parsec Void Text
 
 sc :: Parser ()

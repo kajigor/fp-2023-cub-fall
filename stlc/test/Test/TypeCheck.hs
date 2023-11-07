@@ -4,6 +4,7 @@ import Test.Tasty.HUnit (Assertion, (@?=))
 
 import Syntax
 import TypeCheck
+import qualified Data.Map as M
 
 unit_typecheck = do
     check (Abs "x" Bool (Var "x")) (Arrow Bool Bool)
@@ -12,3 +13,8 @@ unit_typecheck = do
   where
     check term typ =
       typeCheckEmpty term @?= Just typ
+
+unit_typecheck_env = do
+    checkEnv (M.singleton "f" (Arrow Bool Bool)) (Abs "x" Bool (App (Var "f") (If (Var "x") (BoolLit False) (Var "x")))) (Arrow Bool Bool)
+  where
+    checkEnv env term typ = typeCheck env term @?= Just typ

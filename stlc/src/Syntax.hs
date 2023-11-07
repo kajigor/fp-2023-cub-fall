@@ -16,7 +16,7 @@ data Type
 
 instance Show Type where
   show (TyVar v) = v
-  show (Arrow (Arrow t1 t2) t3) = printf  "(%s -> %s) -> %s" (show t1) (show t2) (show t3)
+  show (Arrow t1@(Arrow _ _) t2) = printf  "(%s) -> %s" (show t1) (show t2)
   show (Arrow t1 t2) = printf  "%s -> %s" (show t1) (show t2)
   show (Bool) = "Bool"
 
