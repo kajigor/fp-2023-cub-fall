@@ -13,7 +13,16 @@ labelGuard True _  = return ()
 labelGuard False e = Left e
 
 type Env = M.Map String Type
-type Error = String
+type Var = String
+
+data TypeError 
+    = IncompatibleContexts Env Env
+    | IncompatibleVariable Var Type Env
+    | IncompatibleArgument (Term String) Type (Term String) Type
+    | ExpectedArrow (Term String) Type
+    | ExpectedBool (Term String) Type
+    | ExpectedSame (Term String) Type (Term String) Type
+    | UnknownVariable Var Env
 
 unionWithM :: (Monad m, Ord key) => (val -> val -> m val) -> M.Map key val -> M.Map key val -> m (M.Map key val)
 unionWithM f m1 m2 = sequence $ M.unionWith (\xm ym -> join $ liftM2 f xm ym) (M.map return m1) (M.map return m2)
@@ -21,25 +30,25 @@ unionWithM f m1 m2 = sequence $ M.unionWith (\xm ym -> join $ liftM2 f xm ym) (M
 combineContexts' :: Env -> Env -> Maybe Env
 combineContexts' = unionWithM (\a b -> guard (a == b) $> a)
 
-combineContexts :: Env -> Env -> Either Error Env
+combineContexts :: Env -> Env -> Either TypeError Env
 combineContexts a b = case (combineContexts' a b) of
     Just env -> return env
-    Nothing -> Left $ concat ["Incompatible contexts: ", show a, " and ", show b]
+    Nothing -> Left $ IncompatibleContexts a b
 
-validateVariable :: String -> Type -> Env -> Either Error ()
+validateVariable :: String -> Type -> Env -> Either TypeError ()
 validateVariable x t e = case M.lookup x e of
-    Just t' -> labelGuard (t == t') $ concat ["Expected variable ", show x, " in enviromnent ", show e, " to have type ", show t]
+    Just t' -> labelGuard (t == t') $ IncompatibleVariable x t e
     Nothing -> return ()
 
 data ProofTree = PT { context :: Env, proofTerm :: Term String, resultType :: Type, ruleName :: String, subproofs :: [ProofTree] }
 
-axiom :: String -> Type -> Either Error ProofTree
+axiom :: String -> Type -> Either TypeError ProofTree
 axiom v t = return $ PT { context = M.singleton v t, proofTerm = Var v, resultType = t, ruleName = "\\text{Ax}", subproofs = [] }
 
-boolAxiom :: Bool -> Either Error ProofTree
+boolAxiom :: Bool -> Either TypeError ProofTree
 boolAxiom b = return $ PT { context = M.empty, proofTerm = BoolLit b, resultType = Bool, ruleName = "\\text{Bool}", subproofs = [] }
 
-abstraction :: String -> Type -> ProofTree -> Either Error ProofTree
+abstraction :: String -> Type -> ProofTree -> Either TypeError ProofTree
 abstraction x t b = do
     validateVariable x t (context b)
     return $ PT 
@@ -50,7 +59,7 @@ abstraction x t b = do
         , subproofs = [b]
         }
 
-application :: ProofTree -> ProofTree -> Either Error ProofTree
+application :: ProofTree -> ProofTree -> Either TypeError ProofTree
 application x@(PT { proofTerm = m, resultType = t1 }) y@(PT { proofTerm = n, resultType = t2 }) = case t1 of
     Arrow t11 t12 | t2 == t11 -> do
                         env <- combineContexts (context x) (context y)
@@ -61,14 +70,14 @@ application x@(PT { proofTerm = m, resultType = t1 }) y@(PT { proofTerm = n, res
                             , ruleName = "\\to\\text{E}"
                             , subproofs = [x, y]
                             }
-                  | otherwise -> Left $ concat ["Invalid argument type: expected ", show t11, " as input type for ", show m, ", got ", show n, " : ", show t2]
-    _ -> Left $ concat ["Expected ", show m, " to be an arrow type, got ", show t1]
+                  | otherwise -> Left $ IncompatibleArgument m t11 n t2
+    _ -> Left $ ExpectedArrow m t1
 
 
-tif :: ProofTree -> ProofTree -> ProofTree -> Either Error ProofTree
+tif :: ProofTree -> ProofTree -> ProofTree -> Either TypeError ProofTree
 tif x@(PT {proofTerm = c, resultType = ct}) y@(PT {proofTerm = t, resultType = tt}) z@(PT {proofTerm = e, resultType = et}) = do
-    labelGuard (ct == Bool) $ concat ["Expected condition to be Bool, got ", show c, " : ", show ct]
-    labelGuard (tt == et) $ concat ["Expected branches to match, got ", show t, " : ", show tt, " and ", show e, " : ", show et]
+    labelGuard (ct == Bool) $ ExpectedBool c ct
+    labelGuard (tt == et) $ ExpectedSame t tt e et
     env' <- combineContexts (context x) (context y)
     env <- combineContexts env' (context z)
     return $ PT
@@ -79,7 +88,7 @@ tif x@(PT {proofTerm = c, resultType = ct}) y@(PT {proofTerm = t, resultType = t
         , subproofs = [x, y, z]
         }
 
-tlet :: String -> ProofTree -> ProofTree -> Either Error ProofTree
+tlet :: String -> ProofTree -> ProofTree -> Either TypeError ProofTree
 tlet var x@(PT { proofTerm = v, resultType = t }) y@(PT {proofTerm = b, resultType = bt}) = do
     validateVariable var t (context y)
     env <- combineContexts (context x) (M.delete var (context y))

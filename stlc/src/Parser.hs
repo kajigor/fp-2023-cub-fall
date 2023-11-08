@@ -18,6 +18,8 @@ import Syntax
 
 type Parser = Parsec Void Text
 
+newtype ParserError = ParserError (ParseErrorBundle Text Void)
+
 sc :: Parser ()
 sc = L.space
   space1
@@ -141,6 +143,9 @@ mapLeft :: (a -> b) -> Either a c -> Either b c
 mapLeft f (Left x) = Left (f x)
 mapLeft _ (Right x) = Right x
 
-parseLambdaTerm :: Text -> Either String (Term String)
+parseLambdaTerm :: Text -> Either ParserError (Term String)
 parseLambdaTerm input =
-  mapLeft errorBundlePretty $ parseEof pLambdaTerm input
+  mapLeft ParserError $ parseEof pLambdaTerm input
+
+prettyParserError :: ParserError -> String
+prettyParserError (ParserError err) = errorBundlePretty err

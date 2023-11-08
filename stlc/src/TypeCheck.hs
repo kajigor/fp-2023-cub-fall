@@ -5,14 +5,14 @@ import qualified Data.Map as M
 import Control.Monad (guard)
 import ProofTree
 
-typeCheckEmpty :: Term String -> Either Error ProofTree
+typeCheckEmpty :: Term String -> Either TypeError ProofTree
 typeCheckEmpty t = typeCheck M.empty t
 
-typeCheck :: Env -> Term String -> Either Error ProofTree
+typeCheck :: Env -> Term String -> Either TypeError ProofTree
 typeCheck env (Var v) =
   case M.lookup v env of
     Just t -> axiom v t
-    Nothing -> Left $ concat ["Unknown variable ", show v, " in environment ", show env, "."]
+    Nothing -> Left $ UnknownVariable v env
 typeCheck env (Abs x t b) = do
   let env' = M.insert x t env
   t1 <- typeCheck env' b
