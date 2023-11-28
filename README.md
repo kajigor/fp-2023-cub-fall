@@ -1,12 +1,21 @@
-# fp-2023-cub-fall
+# HW10
 
-This is a supplementory repository to the Advanced Functional Programming course taught in the [Constructor University Bremen](https://constructor.university/) by [@danyaberezun](https://github.com/danyaberezun) and [@kajigor](https://github.com/kajigor). 
+## Deadline: 12.12.2023, 23:59
 
-The syllabus of the course can be found [here](https://docs.google.com/document/d/11nIeQ4LNnz988R2goMwRJFJ2bVCzVCF8/edit?usp=sharing&ouid=106592839861472782542&rtpof=true&sd=true). 
-Please familiarize yourself with it, especially with the criteria for the completion of the course. 
+### Assigned by @danyaberezun
 
-The materials used in lectures, as well as homework assignments, will be published in a separate branch of this repository. 
-Unless stated otherwise, the deadline for a homework assignment is 23:59 of the day preceding the lecture following the homework assignment's publication. 
-To submit the homework assignment, please make a fork of this repository and open a pull-request to the corresponding branch. 
-Please tag the instructor who assigned the homework to ensure that your pull-request has been seen. 
-If your homework assignment has not been checked for a week after submission, please reach out to the instructor on telegram. 
+## Manual Installation
+
+1. [Install and initialize `opam`](https://opam.ocaml.org/doc/Install.html)
+2. Create a `switch`: `opam switch create coq 4.14.0; opam switch set coq; eval $(opam env)`
+3. Checkout the branch
+4. Install dependencies: `./configure`
+5. Run `make`. It should return an error: `Tactic failure: tauto failed`
+6. Install and use one of IDEs/interfaces/plugins for Coq: [`coq-ide`](https://coq.inria.fr/refman/practical-tools/coqide.html), [`proof general`](https://proofgeneral.github.io/) or one of vs-code extensions ([coq](https://marketplace.visualstudio.com/items?itemName=ruoz.coq), [VsCoq](https://marketplace.visualstudio.com/items?itemName=maximedenes.vscoq), [Coq LSP](https://marketplace.visualstudio.com/items?itemName=ejgallego.coq-lsp))
+
+## Task
+
+* [`b1.v`](src/b1.v) is the home assignment
+* [`b2.v`](src/b2.v) and [`b3.v`](src/b3.v) contain optional additional assignments for which additional points will be awarded (4 per file)
+
+[Examples from the lecture](src/ex.v)
