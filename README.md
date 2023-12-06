@@ -19,6 +19,32 @@ From those core primitives we can build all of the tools we need:
 
 The implementation of matcher is identical to the one from wikipedia.
 
+Properties:
+* Concatenation (Repeat `r` `l1` `r1`) (Repeat `r` `l2` `r2`) = Repeat `r` `l1 + l2` `r1 + r2`
+* Concatenation (Kleene `r`) (Repeat `r` `l2` `r2`) = Kleene `r`
+* Concatenation (Repeat `r` `l2` `r2`) (Kleene `r`) = Kleene `r`
+* Concatenation (Kleene `r`) (Kleene `r`) = Kleene `r`
+* Union (Kleene `r`) (Repeat `r` `l2` `r2`) = Kleene `r`
+* Union (Repeat `r` `l2` `r2`) (Kleene `r`) = Kleene `r`
+* Union (Kleene `r`) (Kleene `r`) = Kleene `r`
+* Union (Repeat `r` `l1` `r1`) (Repeat `r` `l2` `r2`) = Repeat `r` min(`l1`, `l2`) max(`r1`, `r2`)
+* Kleene (Kleene `r`) = Kleene `r`
+
+There are a lot of such properties that can be generated using question, plus and repeat `n` times, I will skip those.
+
+* Union `a` `a` = `a`
+* Union `a` `b` = Union `b` `a`
+* Union (Union `a` `b`) `c` = Union `a` (Union `b` `c`)
+* Concatenation `a` (Union `b` `c`) = Union (Concatenation `a` `b`) (Concatenation `a` `c`)
+* Concatenation (Union `a` `b`) `c` = Union (Concatenation `a` `c`) (Concatenation `b` `c`)
+* Concatenation Bottom a = Bottom
+* Concatenation a Bottom = Bottom
+* Union Bottom a = a
+* Union a Bottom = a
+* Repeat Bottom a b = Bottom
+* Klenee Bottom = Bottom
+
+
 # HW11
 
 ## Deadline: 05.12.2023, 23:59
