@@ -57,3 +57,8 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - hw11
+    - hedgehog
+    - tasty
+    - tasty-hedgehog
+    - tasty-hspec
+    - tasty-hunit
