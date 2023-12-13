@@ -1,0 +1,84 @@
+cabal-version: 2.2
+
+-- This file has been generated from package.yaml by hpack version 0.35.2.
+--
+-- see: https://github.com/sol/hpack
+
+name:           stlc
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/kajigor/stlc#readme>
+homepage:       https://github.com/kajigor/stlc#readme
+bug-reports:    https://github.com/kajigor/stlc/issues
+author:         Ekaterina Verbitskaia
+maintainer:     kajigor@gmail.com
+copyright:      Ekaterina Verbitskaia
+license:        BSD-3-Clause
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    CHANGELOG.md
+
+source-repository head
+  type: git
+  location: https://github.com/kajigor/stlc
+
+library
+  exposed-modules:
+      Parser
+      Syntax
+      TypeCheck
+  other-modules:
+      Paths_stlc
+  autogen-modules:
+      Paths_stlc
+  hs-source-dirs:
+      src
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
+  build-depends:
+      base >=4.7 && <5
+    , containers
+    , megaparsec
+    , parser-combinators
+    , text
+  default-language: Haskell2010
+
+executable exe
+  main-is: Main.hs
+  other-modules:
+      App
+      Paths_stlc
+  autogen-modules:
+      Paths_stlc
+  hs-source-dirs:
+      app
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , containers
+    , optparse-applicative
+    , stlc
+    , text
+  default-language: Haskell2010
+
+test-suite stlc-test
+  type: exitcode-stdio-1.0
+  main-is: Test.hs
+  other-modules:
+      Test.TypeCheck
+      Paths_stlc
+  autogen-modules:
+      Paths_stlc
+  hs-source-dirs:
+      test
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      HUnit
+    , base >=4.7 && <5
+    , containers
+    , stlc
+    , tasty
+    , tasty-discover
+    , tasty-hunit
+    , text
+  default-language: Haskell2010

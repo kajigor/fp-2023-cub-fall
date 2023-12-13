@@ -1,0 +1,70 @@
+name:                stlc
+version:             0.1.0.0
+github:              "kajigor/stlc"
+license:             BSD-3-Clause
+author:              "Ekaterina Verbitskaia"
+maintainer:          "kajigor@gmail.com"
+copyright:           "Ekaterina Verbitskaia"
+
+extra-source-files:
+- README.md
+- CHANGELOG.md
+
+# Metadata used when publishing your package
+# synopsis:            Short description of your package
+# category:            Web
+
+# To avoid duplicated efforts in documentation and dealing with the
+# complications of embedding Haddock markup inside cabal files, it is
+# common to point users to the README.md file.
+description:         Please see the README on GitHub at <https://github.com/kajigor/stlc#readme>
+
+dependencies:
+- base >= 4.7 && < 5
+- text
+- containers
+
+
+ghc-options:
+- -Wall
+- -Wcompat
+- -Widentities
+- -Wincomplete-record-updates
+- -Wincomplete-uni-patterns
+- -Wmissing-export-lists
+- -Wmissing-home-modules
+- -Wpartial-fields
+- -Wredundant-constraints
+
+library:
+  source-dirs: src
+  dependencies:
+  - megaparsec
+  - parser-combinators
+
+executables:
+  exe:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - optparse-applicative
+    - stlc
+
+tests:
+  stlc-test:
+    main:                Test.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - stlc
+    - HUnit
+    - tasty
+    - tasty-hunit
+    - tasty-discover
