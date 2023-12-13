@@ -1,4 +1,6 @@
 {-# LANGUAGE FlexibleContexts #-}
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Use <$>" #-}
 
 module Expr.Parser (parse) where
 
@@ -67,11 +69,14 @@ expression = makeExprParser term operatorTable
 operatorTable :: [[Operator Parser Expr]]
 operatorTable =
   [ [ prefix "?" IsZero ]
+  , [ prefix "`" Fst ]
+  , [ prefix "~" Snd ]
   , [ binary "+" Add ]
+  , [ binary "," Pair ]
   ]
 
 binary :: String -> (Expr -> Expr -> Expr) -> Operator Parser Expr
-binary name f = InfixL (f <$ string name)
+binary name f = InfixL (f <$ whitespace <* string name <* whitespace)
 
 prefix :: String -> (Expr -> Expr) -> Operator Parser Expr
 prefix name f = Prefix (f <$ string name)
