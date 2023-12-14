@@ -39,6 +39,9 @@ dot = symbol "." <?> "dot"
 colon :: Parser Text
 colon = symbol ":" <?> "colon"
 
+equals :: Parser Text
+equals = symbol "=" <?> "equals"
+
 kw :: Text -> Parser Text
 kw keyword = lexeme (string keyword <* notFollowedBy alphaNumChar)
 
@@ -60,6 +63,12 @@ elseKW = kw "Else" <?> "Else"
 boolKW :: Parser Text
 boolKW = kw "Bool" <?> "Bool"
 
+letKW :: Parser Text
+letKW = kw "Let" <?> "Let"
+
+inKW :: Parser Text 
+inKW = kw "In" <?> "In"
+
 -- abstraction :: λ x : T . b
 
 lambda :: Parser Text
@@ -78,6 +87,7 @@ pLambdaTerm = choice
   , pApplication
   , pBoolLit
   , pIf
+  , pLet
   ]
   <?> "lambda term"
 
@@ -104,6 +114,11 @@ pIf :: Parser (Term String)
 pIf =
   If <$> (ifKW *> pLambdaTerm) <*> (thenKW *> pLambdaTerm) <*> (elseKW *> pLambdaTerm)
   <?> "if expression"
+
+pLet :: Parser (Term String)
+pLet =
+  Let <$> (letKW *> ident) <*> (equals *> pLambdaTerm) <*> (inKW *> pLambdaTerm)
+  <?> "let expression"
 
 pType :: Parser Type
 pType =

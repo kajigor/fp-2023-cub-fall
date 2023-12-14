@@ -1,0 +1,13 @@
+cradle:
+  stack:
+    - path: "./src"
+      component: "stlc:lib"
+
+    - path: "./app/Main.hs"
+      component: "stlc:exe:exe"
+
+    - path: "./app/App.hs"
+      component: "stlc:exe:exe"
+
+    - path: "./test"
+      component: "stlc:test:stlc-test"

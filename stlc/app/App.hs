@@ -4,11 +4,13 @@ module App where
 import Options.Applicative
 import Parser (parseLambdaTerm)
 import TypeCheck
+import Inference
 import Data.Text (Text)
 
 data Transformation
   = TypeCheck
   | Parse
+  | Inference
 
 data Action = Action
   { transformation :: Transformation
@@ -37,6 +39,7 @@ parseTransformation :: Parser Transformation
 parseTransformation =
       typeCheckParser
   <|> parserParser
+  <|> inferenceParser
 
 parserParser :: Parser Transformation
 parserParser = flag' Parse
@@ -52,6 +55,14 @@ typeCheckParser = flag' TypeCheck
   <> short 'c'
   <> help "Type check the term"
   )
+
+inferenceParser :: Parser Transformation
+inferenceParser = flag' Inference
+  (  long "inference"
+  <> short 'n'
+  <> help "Hindley-Milner"
+  )
+
 
 transform :: Args -> IO Action
 transform (Args transformation input) = do
@@ -73,6 +84,8 @@ runAction args = do
       printEither $ typeCheckEmpty <$> parseLambdaTerm (input action)
     Parse ->
       printEither $ parseLambdaTerm (input action)
+    Inference ->
+      printEither $ inferenceEmpty <$> parseLambdaTerm (input action)
 
 runApp :: IO ()
 runApp = do

@@ -26,6 +26,7 @@ data Term a
   | App (Term a) (Term a)
   | BoolLit Bool
   | If (Term a) (Term a) (Term a)
+  | Let a (Term a) (Term a)
   deriving (Eq)
 
 instance {-# OVERLAPPING #-} Show (Term String) where
@@ -34,6 +35,7 @@ instance {-# OVERLAPPING #-} Show (Term String) where
   show (App t1 t2) = printf "(%s) (%s)" (show t1) (show t2)
   show (BoolLit b) = printf "%s" (show b)
   show (If c t e) = printf "if %s then %s else %s" (show c) (show t) (show e)
+  show (Let x e1 e2) = printf "let %s = %s in %s" (show x) (show e1) (show e2)
 
 instance Show a => Show (Term a) where
   show (Var x) = printf "v%s" (show x)
@@ -41,6 +43,7 @@ instance Show a => Show (Term a) where
   show (App t1 t2) = printf "(%s) (%s)" (show t1) (show t2)
   show (BoolLit b) = printf "%s" (show b)
   show (If c t e) = printf "if %s then %s else %s" (show c) (show t) (show e)
+  show (Let x e1 e2) = printf "let %s = %s in %s" (show x) (show e1) (show e2)
 
 freeVars :: Ord a => Term a -> S.Set a
 freeVars (Var a) = S.singleton a
@@ -48,3 +51,4 @@ freeVars (Abs a _ t) = S.delete a (freeVars t)
 freeVars (App t1 t2) = S.union (freeVars t1) (freeVars t2)
 freeVars (BoolLit _) = S.empty
 freeVars (If c t e) = S.unions (freeVars <$> [c, t, e])
+freeVars (Let x e1 e2) = S.union (freeVars e1) (S.delete x (freeVars e2))

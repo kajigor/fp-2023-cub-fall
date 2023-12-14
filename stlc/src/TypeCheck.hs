@@ -31,3 +31,7 @@ typeCheck env (If c t e) = do
   et <- typeCheck env e
   guard (tt == et)
   return tt
+typeCheck env (Let x e1 e2) = do
+  e1t <- typeCheck env e1
+  let env' = M.insert x e1t env
+  typeCheck env' e2
