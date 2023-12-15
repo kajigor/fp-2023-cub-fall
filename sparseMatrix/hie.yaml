@@ -1,0 +1,10 @@
+cradle:
+  stack:
+    - path: "./src"
+      component: "sparseQuadTree:lib"
+
+    - path: "./app/Main.hs"
+      component: "sparseQuadTree:exe:sparseQuadTree-exe"
+
+    - path: "./test"
+      component: "sparseQuadTree:test:sparseQuadTree-test"

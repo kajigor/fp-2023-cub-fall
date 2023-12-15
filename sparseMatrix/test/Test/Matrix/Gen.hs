@@ -27,9 +27,8 @@ genMatrix size maxInt
       x <- genInt maxInt
       return $ Cell size x 
     genQuad = do 
-      let genSmaller = genMatrix (size - 1) maxInt
-      nw <- genSmaller 
-      ne <- genSmaller 
-      sw <- genSmaller 
-      se <- genSmaller 
-      return $ Quad size nw ne sw se
+      nw <- genMatrix (size - 1) maxInt 
+      ne <- genMatrix (size - 1) maxInt 
+      sw <- genMatrix (size - 1) maxInt 
+      se <- genMatrix (size - 1) maxInt 
+      return $ simplify (Quad size nw ne sw se)

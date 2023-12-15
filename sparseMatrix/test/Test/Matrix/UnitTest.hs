@@ -152,8 +152,8 @@ unit_multiplication = do
 
 unit_sub :: Assertion
 unit_sub = do 
-  matrix1 `sub` matrix2 @?= m2x2 (-4) (-4) (-4) (-4)
-  matrix2 `sub` matrix1 @?= m2x2 4 4 4 4
+  matrix1 `sub` matrix2 @?= Cell 1 (-4)
+  matrix2 `sub` matrix1 @?= Cell 1 4
 
 unit_neg :: Assertion
 unit_neg = do 
