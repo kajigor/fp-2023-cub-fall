@@ -63,7 +63,9 @@ instance (Eq bound, Integral bound, Eq a, Num a) => Matrix (QuadTree bound) a wh
   transpose (Quad bound nw ne sw se) = Quad bound (transpose nw) sw ne (transpose se)
 
   scalarMult a (Cell bound b) = Cell bound (a * b)
-  scalarMult a (Quad bound nw ne sw se) = Quad bound (scalarMult a nw) (scalarMult a ne) (scalarMult a sw) (scalarMult a se)
+  scalarMult a (Quad bound nw ne sw se) 
+    | a == 0 = Cell bound 0
+    | otherwise = Quad bound (scalarMult a nw) (scalarMult a ne) (scalarMult a sw) (scalarMult a se)
 
 simplify :: (Integral bound, Eq a) => QuadTree bound a -> QuadTree bound a
 simplify q@(Quad bound (Cell b1 a1) (Cell b2 a2) (Cell b3 a3) (Cell b4 a4))
