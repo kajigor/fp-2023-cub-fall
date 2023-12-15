@@ -7,10 +7,13 @@ import QuadTree
 
 import qualified Hedgehog.Gen as Gen
 import qualified Hedgehog.Range as Range
+import Hedgehog (MonadGen)
+import Debug.Trace
 
 genNat n = Gen.int (Range.constant 0 n)
 genInt n = Gen.int (Range.constantFrom 0 (-n) n)
 
+genMatrix :: (MonadGen m) => Int -> Int -> m (SquareQuadTree Int)
 genMatrix size maxInt
   | size <= 0 = genCell 
   | otherwise = do 
@@ -32,4 +35,7 @@ genMatrix size maxInt
       ne <- genSmaller 
       sw <- genSmaller 
       se <- genSmaller 
-      return $ Quad size nw ne sw se
+      return $ quad nw ne sw se
+
+
+

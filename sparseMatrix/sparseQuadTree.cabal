@@ -27,6 +27,7 @@ library
   exposed-modules:
       Matrix
       QuadTree
+      Weights
   other-modules:
       Paths_sparseQuadTree
   autogen-modules:

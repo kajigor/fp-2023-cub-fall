@@ -76,3 +76,23 @@ hprop_scalarMultTranspose = property $ do
   m <- forAll $ genMatrix b 10
   c <- forAll $ genInt 10
   transpose (c `scalarMult` m) === c `scalarMult` transpose m
+
+hprop_scalarMultCompat :: Property
+hprop_scalarMultCompat = property $ do
+  b <- forAll $ genNat 5
+  m <- forAll $ genMatrix b 10
+  c1 <- forAll $ genInt 10 
+  c2 <- forAll $ genInt 10
+  (c1 * c2) `scalarMult` m === c1 `scalarMult` (c2 `scalarMult` m)
+
+hprop_scalarMultUnit :: Property
+hprop_scalarMultUnit = property $ do
+  b <- forAll $ genNat 5
+  m <- forAll $ genMatrix b 10
+  1 `scalarMult` m === m
+
+hprop_scalarMultConsume :: Property
+hprop_scalarMultConsume = property $ do
+  b <- forAll $ genNat 5
+  m <- forAll $ genMatrix b 10
+  0 `scalarMult` m === Cell b 0
