@@ -76,3 +76,33 @@ hprop_scalarMultTranspose = property $ do
   m <- forAll $ genMatrix b 10
   c <- forAll $ genInt 10
   transpose (c `scalarMult` m) === c `scalarMult` transpose m
+
+hprop_subTranspose :: Property
+hprop_subTranspose = property $ do 
+  b <- forAll $ genNat 5 
+  m1 <- forAll $ genMatrix b 10
+  m2 <- forAll $ genMatrix b 10
+  transpose (m1 `sub` m2) === transpose m1 `sub` transpose m2
+
+hprop_transposeTwice :: Property
+hprop_transposeTwice = property $ do 
+  b <- forAll $ genNat 5 
+  m1 <- forAll $ genMatrix b 10
+  transpose (transpose m1) === m1
+
+hprop_multDistrib :: Property
+hprop_multDistrib = property $ do 
+  b <- forAll $ genNat 5 
+  m1 <- forAll $ genMatrix b 10
+  m2 <- forAll $ genMatrix b 10
+  m3 <- forAll $ genMatrix b 10
+  (m1 `mult` m2) `add` (m1 `mult` m3) === m1 `mult` (m2 `add` m3)
+  (m2 `mult` m1) `add` (m3 `mult` m1) === (m2 `add` m3) `mult` m1
+
+hprop_assocAdd :: Property
+hprop_assocAdd = property $ do
+  b <- forAll $ genNat 5
+  m1 <- forAll $ genMatrix b 10
+  m2 <- forAll $ genMatrix b 10
+  m3 <- forAll $ genMatrix b 10
+  (m1 `add` m2) `add` m3 === m1 `add` (m2 `add` m3)
