@@ -60,7 +60,7 @@ instance (Eq bound, Integral bound, Eq a, Num a) => Matrix (QuadTree bound) a wh
     | otherwise = undefined
 
   transpose c@(Cell _ _) = c
-  transpose (Quad bound nw ne sw se) = Quad bound (transpose nw) sw ne (transpose se)
+  transpose (Quad bound nw ne sw se) = Quad bound (transpose nw) (transpose sw) (transpose ne) (transpose se)
 
   scalarMult a (Cell bound b) = Cell bound (a * b)
   scalarMult a (Quad bound nw ne sw se) 
