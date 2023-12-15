@@ -9,12 +9,14 @@ diagonalM :: (Eq a, Num a) => Int -> a -> SquareQuadTree a
 diagonalM bound x =
   foldr (\b m -> insert m (Point b b) x) (Cell bound 0) [0..2^bound-1]
 
-class Num a => Matrix matrix a where
+class (Functor matrix, Num a) => Matrix matrix a where
   add :: matrix a -> matrix a -> matrix a
 
   sub :: matrix a -> matrix a -> matrix a
+  sub n m = n `add` (neg m)
 
   neg :: matrix a -> matrix a
+  neg = (negate <$>)
 
   mult :: matrix a -> matrix a -> matrix a
 
@@ -25,47 +27,38 @@ class Num a => Matrix matrix a where
 instance (Eq bound, Integral bound, Eq a, Num a, Show bound) => Matrix (QuadTree bound) a where
 
   add :: QuadTree bound a -> QuadTree bound a -> QuadTree bound a
-  add (Cell b 0) m | b == getBound m = m
-  add n (Cell b 0) | getBound n == b = n
-  add (Cell b v) (Cell b' v') | b == b' = Cell b (v + v')
-  add (Quad b x y z w) (Quad b' x' y' z' w') | b == b' = quad (x `add` x') (y `add` y') (z `add` z') (w `add` w')
-  add n@(Quad b _ _ _ _) (Cell b' v) | b == b' = let 
-      c = Cell (pred b') v
-      m = Quad b c c c c in n `add` m
-  add n@(Cell {}) m@(Quad {}) = m `add` n
-  add _ _ = error "Unmatched dimensions"
-
-  sub :: QuadTree bound a -> QuadTree bound a -> QuadTree bound a
-  sub n m = n `add` neg m
-
-  neg :: QuadTree bound a -> QuadTree bound a
-  neg = (negate <$>)
+  add m1 m2 | getBound m1 == getBound m2 = m1 `helper` m2
+            | otherwise = error "Unmatched dimensions"
+    where
+      helper (Cell b 0) m = m
+      helper n (Cell b 0) = n
+      helper (Cell b v) (Cell b' v') = Cell b (v + v')
+      helper (Quad b x y z w) (Quad b' x' y' z' w') = quad (x `helper` x') (y `helper` y') (z `helper` z') (w `helper` w')
+      helper n@(Quad b _ _ _ _) (Cell b' v) = n `helper` (denormalized b' v)
+      helper n@(Cell {}) m@(Quad {}) = m `add` n
 
   transpose :: QuadTree bound a -> QuadTree bound a
   transpose m@(Cell {}) = m
   transpose (Quad b x y z w) = Quad b (transpose x) (transpose z) (transpose y) (transpose w)
 
   scalarMult :: a -> QuadTree bound a -> QuadTree bound a
-  scalarMult a = normalize . ((a *) <$>)
+  scalarMult 0 m = Cell (getBound m) 0
+  scalarMult 1 m = m
+  scalarMult a m = (a *) <$> m -- normalized as long as there isn't any zero divisors in a
 
-  mult (Cell b 0) m | b == getBound m = Cell b 0
-  mult n (Cell b 0) | getBound n == b = Cell b 0
-  mult (Cell b v) (Cell b' v') | b == b' = Cell b (adjust b (v * v'))
+  mult m1 m2 | getBound m1 == getBound m2 = m1 `helper` m2
+             | otherwise = error $ "Unmatched dimensions"
     where
-      adjust 0 x = x
-      adjust k x = adjust (pred k) (2 * x)
-  mult (Quad b x y z w) (Quad b' x' y' z' w') | b == b' = quad 
-    ((x `mult` x') `add` (y `mult` z')) 
-    ((x `mult` y') `add` (y `mult` w')) 
-    ((z `mult` x') `add` (w `mult` z')) 
-    ((z `mult` y') `add` (w `mult` w'))
-  mult n@(Quad b _ _ _ _) (Cell b' v) | b == b' = let 
-      c = Cell (pred b') v
-      m = Quad b c c c c 
-      in n `mult` m
-  mult (Cell b v) m@(Quad b' _ _ _ _) | b == b' = let 
-      c = Cell (pred b') v
-      n = Quad b c c c c 
-      in n `mult` m
-  mult n m = error $ "Unmatched dimensions: " ++ show (getBound n) ++ " / " ++ show (getBound m)
-  
+
+      adjust k x = (2 ^ k) * x
+
+      helper (Cell b 0) m = Cell b 0
+      helper n (Cell b 0) = Cell b 0
+      helper (Cell b v) (Cell b' v') = Cell b (adjust b (v * v'))
+      helper n@(Quad b _ _ _ _) (Cell b' v) = n `helper` (denormalized b' v)
+      helper (Cell b v) m@(Quad b' _ _ _ _) = (denormalized b v) `helper` m
+      helper (Quad b x y z w) (Quad b' x' y' z' w') = quad 
+        ((x `helper` x') `add` (y `helper` z')) 
+        ((x `helper` y') `add` (y `helper` w')) 
+        ((z `helper` x') `add` (w `helper` z')) 
+        ((z `helper` y') `add` (w `helper` w'))

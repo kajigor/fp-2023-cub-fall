@@ -24,7 +24,12 @@ quad :: (Eq bound, Enum bound, Eq a)
      -> QuadTree bound a 
      -> QuadTree bound a 
      -> QuadTree bound a
-quad x y z w = normalize $ Quad (succ $ getBound x) x y z w
+quad x y z w = normalizeTop $ Quad (succ $ getBound x) x y z w
+
+denormalized :: (Enum bound) => bound -> a -> QuadTree bound a
+denormalized b v = Quad b c c c c
+  where
+    c = Cell (pred b) v
 
 cell :: bound -> a -> QuadTree bound a
 cell = Cell 
@@ -32,10 +37,6 @@ cell = Cell
 normalizeTop :: (Eq a) => QuadTree bound a -> QuadTree bound a
 normalizeTop (Quad b (Cell _ x) (Cell _ y) (Cell _ z) (Cell _ w)) | (x == y) && (y == z) && (z == w) = Cell b x
 normalizeTop q = q
-
-normalize :: (Eq a) => QuadTree bound a -> QuadTree bound a
-normalize (Quad b x y z w) = normalizeTop (Quad b (normalize x) (normalize y) (normalize z) (normalize w))
-normalize q = q
 
 -- QuadTree with a bound b is a square QuadTree of size 2^b * 2^b
 type SquareQuadTree a = QuadTree Int a
