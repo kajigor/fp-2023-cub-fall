@@ -34,8 +34,10 @@ inference (Var x) env newVars = case M.lookup x env of
         return (t, TyVar, newVars')
     Nothing -> Nothing
 inference (Abs x _ l) env (var : newVars) = do
-    let env' = M.insert x (Mono $ TyVar var) env
-    inference l env' newVars
+    let newVar = TyVar var
+    let env' = M.insert x (Mono newVar) env
+    (t, subst, newVars') <- inference l env' newVars
+    return (Arrow (substitute newVar subst) t, subst, newVars')
 inference (App l r) env (var : newVars) = do
     (tl, subst1, newVars') <- inference l env newVars
     let env' = substMap env subst1
